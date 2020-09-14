@@ -54,4 +54,5 @@ If the playbook calls for a vars_file, simply create a file in your working dire
 meraki_api_key: <you key>
 organization_id: <org id>
 organization_name: <Name of organization as it appears in the meraki portal>
+template_org_id: <org id of template organization>
 ```
