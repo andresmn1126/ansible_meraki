@@ -12,7 +12,7 @@ Once WSL is installed, you will need to install ansible.
 
 ### Installing
 
-Ansible can beinstalled via your distro package manager
+Ansible can be installed via your distro's package manager
 
 ```
 sudo apt install ansible
@@ -29,13 +29,13 @@ or in the case of running Python3
 pip3 install ansible
 ```
 
-Ansible does not come pre installed with the lastes meraki modules, make sure to install the latest version of the modules by running.
+Ansible does not come pre installed with the latest meraki modules, make sure to install the latest version of the modules by running.
 
 ```
 ansible-galaxy install collection cisco.meraki
 ```
 
-ALl the playbooks utlizie the json_query ansible filter, please make sure to install the jmespath python query language by running
+ALl the playbooks utlizie the json_query ansible filter to parse the data received back from the meraki API, please make sure to install the jmespath python query language by running
 
 ```
 pip install jmespath
