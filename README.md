@@ -1,4 +1,4 @@
-# Meraki Deplyment Automation
+# Meraki Deployment Automation
 
 Ansible playbooks to be used for deployments using the Meraki API
 
