@@ -1,0 +1,50 @@
+---
+- name: Adds existing admins to new organization
+  connection: local
+  hosts: localhost
+  gather_facts: no
+  vars_files: vars.yml
+  vars_prompt:
+    - name: organization_name
+      prompt: What is the new organization name?
+      private: no
+  collections:
+    - cisco.meraki
+
+  tasks:
+    - name: Query lists of current administrators
+      meraki_admin:
+        auth_key: "{{ meraki_api_key }}"
+        org_id: "{{ template_org_id }}"
+        state: query
+      register: output
+
+    - set_fact:
+        full_admins="{{ output | json_query(full_access_query) }}"
+      vars: 
+        full_access_query: "data[?org_access=='full'].{name: name, email: email}"
+
+    - set_fact:
+        read_admins="{{ output | json_query(read_only_query) }}"
+      vars: 
+        read_only_query: "data[?org_access=='read-only'].{name: name, email: email}"    
+ 
+    - name: Add full access admins to new organization
+      meraki_admin:
+        auth_key: "{{ meraki_api_key }}"
+        org_name: "{{ organization_name }}"
+        state: present
+        org_access: full
+        name: "{{ item.name }}"
+        email: "{{ item.email }}"
+      loop: "{{ full_admins }}"   
+
+    - name: Add read-only access admins to new organization
+      meraki_admin:
+        auth_key: "{{ meraki_api_key }}"
+        org_name: "{{ organization_name }}"
+        state: present
+        org_access: read-only
+        email: "{{ item.email }}"
+        name: "{{ item.name }}"
+      loop: "{{ read_admins }}"  

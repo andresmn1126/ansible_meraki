@@ -1,0 +1,40 @@
+---
+- name: Reboot all APs for Roar under their Buffalo network
+  hosts: localhost
+  connection: local
+  collections:
+    - cisco.meraki
+  gather_facts: no
+
+  tasks:
+    - name: Query devices within the organization
+      meraki_device:
+        auth_key: "{{ meraki_api_key }}"
+        org_name: "{{ organization_name }}"
+        net_id: "{{network_id}}"
+        state: query
+      register: output
+
+    - name: Filter down to just Access Points
+      set_fact: ap_list="{{ output | to_json | from_json | json_query(query) }}"
+      vars:
+        query: "data[?contains(model, 'MR')].{serial: serial, name: name}"  
+
+    - name: Reboot APs using ansible URI module
+      uri:
+        url: https://api.meraki.com/api/v0/networks/L_652458996015301946/devices/{{item.serial}}/reboot
+        method: POST
+        follow_redirects: all
+        headers:
+          X-Cisco-Meraki-API-Key: "{{ meraki_api_key }}"
+          content_type: appliation/json
+      loop: "{{ ap_list }}"
+      register: reboot
+
+    - set_fact: successfull_reboot="{{ reboot | json_query('results[].status') }}"
+
+    - debug:
+        msg: "{{ item.name }} has been rebooted"
+      when: 200 in successfull_reboot
+      loop: "{{ ap_list }}"
+      no_log: true
