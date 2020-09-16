@@ -4,9 +4,6 @@
   hosts: localhost
   gather_facts: no
   vars_prompt:
-    - name: user_name
-      prompt: What is the name of the user?
-      private: no
     - name: user_email
       prompt: What is the email of the user?
       private: no
@@ -33,7 +30,6 @@
     - name: Remove administrator from all organizations
       meraki_admin: 
         auth_key: "{{meraki_api_key}}"
-        name: "{{ user_name }}"
         email: "{{ user_email }}"
         org_access: full
         state: absent
