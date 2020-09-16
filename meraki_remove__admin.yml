@@ -1,0 +1,43 @@
+---
+- name: Add a new admin to all organizations
+  connection: local
+  hosts: localhost
+  gather_facts: no
+  vars_prompt:
+    - name: user_name
+      prompt: What is the name of the user?
+      private: no
+    - name: user_email
+      prompt: What is the email of the user?
+      private: no
+
+
+  vars_files: vars.yml
+  collections:
+    - cisco.meraki
+  
+  tasks:
+    - name: Query Meraki API for list of organizations
+      meraki_organization:
+        auth_key: "{{ meraki_api_key }}"
+        state: query
+      register: output
+
+    - name: Initialize empty list
+      set_fact: 
+        organization_id: []
+
+    - name: Set organization_id variable with json output from API
+      set_fact: organization_id="{{ output | json_query('data[].id') | flatten }}"
+
+    - name: Remove administrator from all organizations
+      meraki_admin: 
+        auth_key: "{{meraki_api_key}}"
+        name: "{{ user_name }}"
+        email: "{{ user_email }}"
+        org_access: full
+        state: absent
+        org_id: "{{item}}"
+        validate_certs: false
+      loop: "{{ organization_id }}"
+      delegate_to: localhost
