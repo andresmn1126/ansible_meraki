@@ -1,5 +1,5 @@
 ---
-- name: Remove an admin from all organizations
+- name: Add an admin to all organizations
   connection: local
   hosts: localhost
   gather_facts: no
