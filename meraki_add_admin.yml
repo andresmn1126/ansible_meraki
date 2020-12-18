@@ -10,6 +10,9 @@
     - name: user_name
       prompt: What is the name of the new user?
       private: no
+    - name: access_type
+      prompt: full or read-only
+      private: no
 
   vars_files: vars.yml
   collections:
@@ -34,7 +37,7 @@
         auth_key: "{{meraki_api_key}}"
         name: "{{ user_name }}"
         email: "{{ user_email }}"
-        org_access: full
+        org_access: "{{ access_type }}"
         state: present
         org_id: "{{item}}"
         validate_certs: false
