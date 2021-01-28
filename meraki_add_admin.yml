@@ -11,7 +11,7 @@
       prompt: What is the name of the new user?
       private: no
     - name: access_type
-      prompt: Type access type can be full or read-only
+      prompt: What is the  access type? Can be "full" or "read-only"
       private: no
 
   vars_files: vars.yml
